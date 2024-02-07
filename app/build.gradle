@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 345
     flavorDimensions = ["mode", "api", "abi"]
 
     defaultConfig {
