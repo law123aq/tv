@@ -1,332 +1,139 @@
 package com.fongmi.android.tv.ui.activity;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
 import androidx.viewbinding.ViewBinding;
 
-import com.fongmi.android.tv.BuildConfig;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.Setting;
-import com.fongmi.android.tv.Updater;
-import com.fongmi.android.tv.api.config.LiveConfig;
-import com.fongmi.android.tv.api.config.VodConfig;
-import com.fongmi.android.tv.api.config.WallConfig;
-import com.fongmi.android.tv.bean.Config;
-import com.fongmi.android.tv.bean.Live;
-import com.fongmi.android.tv.bean.Site;
-import com.fongmi.android.tv.databinding.ActivitySettingBinding;
-import com.fongmi.android.tv.db.AppDatabase;
+import com.fongmi.android.tv.databinding.ActivitySettingCustomBinding;
 import com.fongmi.android.tv.event.RefreshEvent;
-import com.fongmi.android.tv.impl.Callback;
-import com.fongmi.android.tv.impl.ConfigCallback;
-import com.fongmi.android.tv.impl.DohCallback;
-import com.fongmi.android.tv.impl.LiveCallback;
-import com.fongmi.android.tv.impl.ProxyCallback;
-import com.fongmi.android.tv.impl.SiteCallback;
-import com.fongmi.android.tv.player.ExoUtil;
 import com.fongmi.android.tv.ui.base.BaseActivity;
-import com.fongmi.android.tv.ui.dialog.ConfigDialog;
-import com.fongmi.android.tv.ui.dialog.DohDialog;
-import com.fongmi.android.tv.ui.dialog.HistoryDialog;
-import com.fongmi.android.tv.ui.dialog.LiveDialog;
-import com.fongmi.android.tv.ui.dialog.ProxyDialog;
-import com.fongmi.android.tv.ui.dialog.SiteDialog;
-import com.fongmi.android.tv.utils.FileUtil;
-import com.fongmi.android.tv.utils.Notify;
 import com.fongmi.android.tv.utils.ResUtil;
-import com.fongmi.android.tv.utils.UrlUtil;
-import com.github.catvod.bean.Doh;
-import com.github.catvod.net.OkHttp;
-import com.permissionx.guolindev.PermissionX;
 
-import java.util.ArrayList;
-import java.util.List;
+public class SettingCustomActivity extends BaseActivity {
 
-public class SettingActivity extends BaseActivity implements ConfigCallback, SiteCallback, LiveCallback, DohCallback, ProxyCallback {
-
-    private ActivitySettingBinding mBinding;
-    private int type;
-
-    public static void start(Activity activity) {
-        activity.startActivity(new Intent(activity, SettingActivity.class));
-    }
-
-    private int getDohIndex() {
-        return Math.max(0, VodConfig.get().getDoh().indexOf(Doh.objectFrom(Setting.getDoh())));
-    }
-
-    private String[] getDohList() {
-        List<String> list = new ArrayList<>();
-        for (Doh item : VodConfig.get().getDoh()) list.add(item.getName());
-        return list.toArray(new String[0]);
-    }
+    private ActivitySettingCustomBinding mBinding;
+    private String[] quality;
+    private String[] size;
+    private String[] episode;
+    private String[] fullscreenMenuKey;
 
     @Override
     protected ViewBinding getBinding() {
-        return mBinding = ActivitySettingBinding.inflate(getLayoutInflater());
+        return mBinding = ActivitySettingCustomBinding.inflate(getLayoutInflater());
+    }
+
+    public static void start(Activity activity) {
+        activity.startActivity(new Intent(activity, SettingCustomActivity.class));
+    }
+
+    private String getSwitch(boolean value) {
+        return getString(value ? R.string.setting_on : R.string.setting_off);
     }
 
     @Override
     protected void initView() {
-        mBinding.vod.requestFocus();
-        mBinding.vodUrl.setText(VodConfig.getDesc());
-        mBinding.liveUrl.setText(LiveConfig.getDesc());
-        mBinding.wallUrl.setText(WallConfig.getDesc());
-        mBinding.backupText.setText(AppDatabase.getDate());
-        mBinding.dohText.setText(getDohList()[getDohIndex()]);
-        mBinding.versionText.setText(BuildConfig.VERSION_NAME);
-        mBinding.proxyText.setText(UrlUtil.scheme(Setting.getProxy()));
-        setCacheText();
-    }
-
-    private void setCacheText() {
-        FileUtil.getCacheSize(new Callback() {
-            @Override
-            public void success(String result) {
-                mBinding.cacheText.setText(result);
-            }
-        });
+        mBinding.quality.requestFocus();
+        mBinding.qualityText.setText((quality = ResUtil.getStringArray(R.array.select_quality))[Setting.getQuality()]);
+        mBinding.sizeText.setText((size = ResUtil.getStringArray(R.array.select_size))[Setting.getSize()]);
+        mBinding.episodeText.setText((episode = ResUtil.getStringArray(R.array.select_episode))[Setting.getEpisode()]);
+        mBinding.displayTimeText.setText(getSwitch(Setting.isDisplayTime()));
+        mBinding.displayNetspeedText.setText(getSwitch(Setting.isDisplaySpeed()));
+        mBinding.displayDurationText.setText(getSwitch(Setting.isDisplayDuration()));
+        mBinding.displayMiniProgressText.setText(getSwitch(Setting.isDisplayMiniProgress()));
+        mBinding.speedText.setText(Setting.getPlaySpeed() + "x");
+        mBinding.fullscreenMenuKeyText.setText((fullscreenMenuKey = ResUtil.getStringArray(R.array.select_fullscreen_menu_key))[Setting.getFullscreenMenuKey()]);
+        mBinding.homeSiteLockText.setText(getSwitch(Setting.isHomeSiteLock()));
+        mBinding.incognitoText.setText(getSwitch(Setting.isIncognito()));
     }
 
     @Override
     protected void initEvent() {
-        mBinding.vod.setOnClickListener(this::onVod);
-        mBinding.live.setOnClickListener(this::onLive);
-        mBinding.wall.setOnClickListener(this::onWall);
-        mBinding.proxy.setOnClickListener(this::onProxy);
-        mBinding.cache.setOnClickListener(this::onCache);
-        mBinding.backup.setOnClickListener(this::onBackup);
-        mBinding.player.setOnClickListener(this::onPlayer);
-        mBinding.danmu.setOnClickListener(this::onDanmu);
-        mBinding.version.setOnClickListener(this::onVersion);
-        mBinding.vod.setOnLongClickListener(this::onVodEdit);
-        mBinding.vodHome.setOnClickListener(this::onVodHome);
-        mBinding.live.setOnLongClickListener(this::onLiveEdit);
-        mBinding.liveHome.setOnClickListener(this::onLiveHome);
-        mBinding.wall.setOnLongClickListener(this::onWallEdit);
-        mBinding.backup.setOnLongClickListener(this::onBackupAuto);
-        mBinding.vodHistory.setOnClickListener(this::onVodHistory);
-        mBinding.version.setOnLongClickListener(this::onVersionDev);
-        mBinding.liveHistory.setOnClickListener(this::onLiveHistory);
-        mBinding.wallDefault.setOnClickListener(this::setWallDefault);
-        mBinding.wallRefresh.setOnClickListener(this::setWallRefresh);
-        mBinding.custom.setOnClickListener(this::onCustom);
-        mBinding.doh.setOnClickListener(this::setDoh);
+        mBinding.quality.setOnClickListener(this::setQuality);
+        mBinding.size.setOnClickListener(this::setSize);
+        mBinding.episode.setOnClickListener(this::setEpisode);
+        mBinding.displayTime.setOnClickListener(this::setDisplayTime);
+        mBinding.displayNetspeed.setOnClickListener(this::setDisplaySpeed);
+        mBinding.displayDuration.setOnClickListener(this::setDisplayDuration);
+        mBinding.displayMiniProgress.setOnClickListener(this::setDisplayMiniProgress);
+        mBinding.speed.setOnClickListener(this::setSpeed);
+        mBinding.speed.setOnLongClickListener(this::resetSpeed);
+        mBinding.fullscreenMenuKey.setOnClickListener(this::setfullscreenMenuKey);
+        mBinding.homeSiteLock.setOnClickListener(this::setHomeSiteLock);
+        mBinding.incognito.setOnClickListener(this::setIncognito);
     }
 
-    @Override
-    public void setConfig(Config config) {
-        if (config.getUrl().startsWith("file") && !PermissionX.isGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            PermissionX.init(this).permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE).request((allGranted, grantedList, deniedList) -> load(config));
-        } else {
-            load(config);
-        }
+    private void setQuality(View view) {
+        int index = Setting.getQuality();
+        Setting.putQuality(index = index == quality.length - 1 ? 0 : ++index);
+        mBinding.qualityText.setText(quality[index]);
+        RefreshEvent.image();
     }
 
-    private void load(Config config) {
-        switch (config.getType()) {
-            case 0:
-                Notify.progress(this);
-                VodConfig.load(config, getCallback());
-                mBinding.vodUrl.setText(config.getDesc());
-                break;
-            case 1:
-                Notify.progress(this);
-                LiveConfig.load(config, getCallback());
-                mBinding.liveUrl.setText(config.getDesc());
-                break;
-            case 2:
-                Notify.progress(this);
-                WallConfig.load(config, getCallback());
-                mBinding.wallUrl.setText(config.getDesc());
-                break;
-        }
+    private void setSize(View view) {
+        int index = Setting.getSize();
+        Setting.putSize(index = index == size.length - 1 ? 0 : ++index);
+        mBinding.sizeText.setText(size[index]);
+        RefreshEvent.size();
     }
 
-    private Callback getCallback() {
-        return new Callback() {
-            @Override
-            public void success() {
-                setConfig();
-            }
-
-            @Override
-            public void error(String msg) {
-                Notify.show(msg);
-                setConfig();
-            }
-        };
+    private void setEpisode(View view) {
+        int index = Setting.getEpisode();
+        Setting.putEpisode(index = index == episode.length - 1 ? 0 : ++index);
+        mBinding.episodeText.setText(episode[index]);
     }
 
-    private void setConfig() {
-        switch (type) {
-            case 0:
-                setCacheText();
-                Notify.dismiss();
-                RefreshEvent.video();
-                RefreshEvent.history();
-                mBinding.vodUrl.setText(VodConfig.getDesc());
-                mBinding.liveUrl.setText(LiveConfig.getDesc());
-                mBinding.wallUrl.setText(WallConfig.getDesc());
-                break;
-            case 1:
-                setCacheText();
-                Notify.dismiss();
-                mBinding.liveUrl.setText(LiveConfig.getDesc());
-                break;
-            case 2:
-                setCacheText();
-                Notify.dismiss();
-                mBinding.wallUrl.setText(WallConfig.getDesc());
-                break;
-        }
+    private void setDisplayTime(View view) {
+        Setting.putDisplayTime(!Setting.isDisplayTime());
+        mBinding.displayTimeText.setText(getSwitch(Setting.isDisplayTime()));
     }
 
-    @Override
-    public void setSite(Site item) {
-        VodConfig.get().setHome(item);
-        RefreshEvent.video();
+    private void setDisplaySpeed(View view) {
+        Setting.putDisplaySpeed(!Setting.isDisplaySpeed());
+        mBinding.displayNetspeedText.setText(getSwitch(Setting.isDisplaySpeed()));
     }
 
-    @Override
-    public void onChanged() {
+    private void setDisplayDuration(View view) {
+        Setting.putDisplayDuration(!Setting.isDisplayDuration());
+        mBinding.displayDurationText.setText(getSwitch(Setting.isDisplayDuration()));
     }
 
-    @Override
-    public void setLive(Live item) {
-        LiveConfig.get().setHome(item);
+    private void setDisplayMiniProgress(View view) {
+        Setting.putDisplayMiniProgress(!Setting.isDisplayMiniProgress());
+        mBinding.displayMiniProgressText.setText(getSwitch(Setting.isDisplayMiniProgress()));
     }
 
-    private void onVod(View view) {
-        ConfigDialog.create(this).type(type = 0).show();
+    private void setSpeed(View view) {
+        float speed = Setting.getPlaySpeed();
+        float addon = speed >= 2 ? 1f : 0.25f;
+        speed = speed >= 5 ? 0.25f : Math.min(speed + addon, 5.0f);
+        Setting.putPlaySpeed(speed);
+        mBinding.speedText.setText(Setting.getPlaySpeed() + "x");
     }
 
-    private void onLive(View view) {
-        ConfigDialog.create(this).type(type = 1).show();
-    }
-
-    private void onWall(View view) {
-        ConfigDialog.create(this).type(type = 2).show();
-    }
-
-    private boolean onVodEdit(View view) {
-        ConfigDialog.create(this).type(type = 0).edit().show();
+    private boolean resetSpeed(View view) {
+        Setting.putPlaySpeed(1.0f);
+        mBinding.speedText.setText(Setting.getPlaySpeed() + "x");
         return true;
     }
 
-    private boolean onLiveEdit(View view) {
-        ConfigDialog.create(this).type(type = 1).edit().show();
-        return true;
+    private void setfullscreenMenuKey(View view) {
+        int index = Setting.getFullscreenMenuKey();
+        Setting.putFullscreenMenuKey(index = index == fullscreenMenuKey.length - 1 ? 0 : ++index);
+        mBinding.fullscreenMenuKeyText.setText(fullscreenMenuKey[index]);
     }
 
-    private boolean onWallEdit(View view) {
-        ConfigDialog.create(this).type(type = 2).edit().show();
-        return true;
+    private void setHomeSiteLock(View view) {
+        Setting.putHomeSiteLock(!Setting.isHomeSiteLock());
+        mBinding.homeSiteLockText.setText(getSwitch(Setting.isHomeSiteLock()));
     }
 
-    private void onVodHome(View view) {
-        SiteDialog.create(this).action().show();
+    private void setIncognito(View view) {
+        Setting.putIncognito(!Setting.isIncognito());
+        mBinding.incognitoText.setText(getSwitch(Setting.isIncognito()));
     }
 
-    private void onLiveHome(View view) {
-        LiveDialog.create(this).action().show();
-    }
-
-    private void onVodHistory(View view) {
-        HistoryDialog.create(this).type(type = 0).show();
-    }
-
-    private void onLiveHistory(View view) {
-        HistoryDialog.create(this).type(type = 1).show();
-    }
-
-    private void onPlayer(View view) {
-        SettingPlayerActivity.start(this);
-    }
-
-    private void onDanmu(View view) {
-        SettingDanmuActivity.start(this);
-    }
-
-    private void onVersion(View view) {
-        Updater.get().force().release().start(this);
-    }
-
-    private boolean onVersionDev(View view) {
-        Updater.get().force().dev().start(this);
-        return true;
-    }
-
-    private void setWallDefault(View view) {
-        WallConfig.refresh(Setting.getWall() == 4 ? 1 : Setting.getWall() + 1);
-    }
-
-    private void setWallRefresh(View view) {
-        Notify.progress(this);
-        WallConfig.get().load(new Callback() {
-            @Override
-            public void success() {
-                Notify.dismiss();
-                setCacheText();
-            }
-        });
-    }
-
-    private void onCustom(View view) {
-        SettingCustomActivity.start(this);
-    }
-
-    private void setDoh(View view) {
-        DohDialog.create(this).index(getDohIndex()).show();
-    }
-
-    @Override
-    public void setDoh(Doh doh) {
-        OkHttp.get().setDoh(doh);
-        Notify.progress(getActivity());
-        Setting.putDoh(doh.toString());
-        mBinding.dohText.setText(doh.getName());
-        VodConfig.load(Config.vod(), getCallback());
-    }
-
-    private void onProxy(View view) {
-        ProxyDialog.create(this).show();
-    }
-
-    @Override
-    public void setProxy(String proxy) {
-        ExoUtil.reset();
-        Setting.putProxy(proxy);
-        OkHttp.get().setProxy(proxy);
-        Notify.progress(getActivity());
-        VodConfig.load(Config.vod(), getCallback());
-        mBinding.proxyText.setText(UrlUtil.scheme(proxy));
-    }
-
-    private void onCache(View view) {
-        FileUtil.clearCache(new Callback() {
-            @Override
-            public void success() {
-                setCacheText();
-            }
-        });
-    }
-
-    private void onBackup(View view) {
-        PermissionX.init(this).permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE).request((allGranted, grantedList, deniedList) -> AppDatabase.backup(new Callback() {
-            @Override
-            public void success() {
-                mBinding.backupText.setText(AppDatabase.getDate());
-            }
-        }));
-    }
-
-    private boolean onBackupAuto(View view) {
-        Setting.putBackupAuto(!Setting.isBackupAuto());
-        mBinding.backupText.setText(AppDatabase.getDate());
-        return true;
-    }
 }
