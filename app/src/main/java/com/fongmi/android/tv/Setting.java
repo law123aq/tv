@@ -373,6 +373,14 @@ public class Setting {
         Prefers.put("display_mini_progress", display);
     }
 
+    public static boolean isDisplaySize() {
+        return Prefers.getBoolean("display_size", false);
+    } 
+
+    public static void putDisplaySize(boolean display) {
+        Prefers.put("display_size", display);
+    } 
+
     public static float getPlaySpeed() {
         return Prefers.getFloat("play_speed", 1.0f);
     }
@@ -419,6 +427,14 @@ public class Setting {
 
     public static int getSmallWindowBackKey() {
         return Prefers.getInt("small_window_back_key", 0);
+    }
+
+    public static void putHomeChangeConfig(boolean change) {
+        Prefers.put("home_change_config", change);
+    }
+
+    public static boolean isHomeChangeConfig() {
+        return Prefers.getBoolean("home_change_config", false);
     }
 
     public static boolean isAggregatedSearch() {
