@@ -511,15 +511,17 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, Custom
     private void showDisplayInfo() {
         boolean controlVisible = isVisible(mBinding.control.getRoot());
         boolean visible = (!controlVisible || isLock());
-        mBinding.display.time.setVisibility(Setting.isDisplayTime() && visible  ? View.VISIBLE : View.GONE);
-        mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && visible ? View.VISIBLE : View.GONE);
+        mBinding.display.time.setVisibility(Setting.isDisplayTime() && visible && !isInPictureInPictureMode() ? View.VISIBLE : View.GONE); 
+        mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && visible && !isInPictureInPictureMode() && !isVisible(mBinding.widget.info) ? View.VISIBLE : View.GONE); 
         mBinding.display.duration.setVisibility(View.GONE);
+        mBinding.display.size.setVisibility(Setting.isDisplaySize() && visible && !isInPictureInPictureMode() ? View.VISIBLE : View.GONE);
     }
 
     private void onTimeChangeDisplaySpeed() {
         boolean controlVisible = isVisible(mBinding.control.getRoot());
         boolean visible = (!controlVisible || isLock());
         if (Setting.isDisplaySpeed() && visible) Traffic.setSpeed(mBinding.display.netspeed);
+        if (Setting.isDisplaySize() && visible ) mBinding.display.size.setText(mPlayers.getSizeText());
         showDisplayInfo();
     }
 
