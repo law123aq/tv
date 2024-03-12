@@ -164,7 +164,6 @@ public class ControlDialog extends BaseDialog implements ParseAdapter.OnClickLis
         binding.dpsize.setActivated(!display);
     }
 
-
     private void onTimer(View view) {
         App.post(() -> TimerDialog.create().show(activity), 200);
         dismiss();
