@@ -780,9 +780,10 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
 
     private void showDisplayInfo() {
         mBinding.display.time.setVisibility(Setting.isDisplayTime() || isVisible(mBinding.widget.info)  ? View.VISIBLE : View.GONE);
-        mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && !isVisible(mBinding.control.getRoot()) ? View.VISIBLE : View.GONE);
-        mBinding.display.duration.setVisibility(Setting.isDisplayDuration() && !isVisible(mBinding.control.getRoot()) ? View.VISIBLE : View.GONE);
-        mBinding.display.progress.setVisibility(Setting.isDisplayMiniProgress() && !isVisible(mBinding.control.getRoot()) ? View.VISIBLE : View.GONE);
+        mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && !isVisible(mBinding.widget.info) && !isVisible(mBinding.control.getRoot()) || (isVisible(mBinding.widget.info) && !isVisible(mBinding.control.getRoot())) ? View.VISIBLE : View.GONE);
+        mBinding.display.duration.setVisibility(Setting.isDisplayDuration() && !isVisible(mBinding.widget.info) && !isVisible(mBinding.control.getRoot()) || (isVisible(mBinding.widget.info) && !isVisible(mBinding.control.getRoot())) ? View.VISIBLE : View.GONE);
+        mBinding.display.progress.setVisibility(Setting.isDisplayMiniProgress() && !isVisible(mBinding.widget.info) && !isVisible(mBinding.control.getRoot()) || (isVisible(mBinding.widget.info) && !isVisible(mBinding.control.getRoot())) ? View.VISIBLE : View.GONE); 
+        mBinding.display.size.setVisibility(Setting.isDisplaySize() && !isVisible(mBinding.widget.info) && !isVisible(mBinding.control.getRoot()) || (!isVisible(mBinding.widget.info) && isVisible(mBinding.control.getRoot())) ? View.VISIBLE : View.GONE);
     }
 
     private void onTimeChangeDisplaySpeed() {
@@ -791,6 +792,7 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
         if (Setting.isDisplaySpeed() && visible) Traffic.setSpeed(mBinding.display.netspeed);
         if (Setting.isDisplayDuration() && visible && position > 0) mBinding.display.duration.setText(mPlayers.getPositionTime(0) + "/" + mPlayers.getDurationTime());
         if (Setting.isDisplayMiniProgress() && visible && position > 0) mBinding.display.progress.setProgress((int)(position * 100 / mPlayers.getDuration()));
+        if (Setting.isDisplaySize() && visible) mBinding.display.size.setText(mPlayers.getSizeText()); 
         showDisplayInfo();
     }
 
