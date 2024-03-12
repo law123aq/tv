@@ -459,7 +459,7 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     private void showDisplayInfo() {
         boolean controlVisible = isVisible(mBinding.control.getRoot());
         boolean visible = !controlVisible;
-        mBinding.display.time.setVisibility(Setting.isDisplayTime() && visible || Visible(mBinding.control.getRoot()) ? View.VISIBLE : View.GONE); 
+        mBinding.display.time.setVisibility(Setting.isDisplayTime() && visible || isVisible(mBinding.control.getRoot()) ? View.VISIBLE : View.GONE); 
         mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && visible && !isVisible(mBinding.widget.bottom) && !isVisible(mBinding.control.getRoot()) ? View.VISIBLE : View.GONE); 
         mBinding.display.duration.setVisibility(View.GONE);
         mBinding.display.size.setVisibility(Setting.isDisplaySize() && visible && !isVisible(mBinding.control.getRoot()) ? View.VISIBLE : View.GONE);
