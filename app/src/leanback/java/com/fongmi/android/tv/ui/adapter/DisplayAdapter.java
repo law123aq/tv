@@ -64,7 +64,7 @@ public class DisplayAdapter extends RecyclerView.Adapter<DisplayAdapter.ViewHold
         else if (position == 1) Setting.putDisplaySpeed(!Setting.isDisplaySpeed());
         else if (position == 2) Setting.putDisplayDuration(!Setting.isDisplayDuration());
         else if (position == 3) Setting.putDisplayMiniProgress(!Setting.isDisplayMiniProgress());
-        else if (position == 4) Setting.putDisplayMiniProgress(!Setting.isDisplaySize());
+        else if (position == 4) Setting.putDisplaySize(!Setting.isDisplaySize());
         notifyItemRangeChanged(0, getItemCount());
     }
 
