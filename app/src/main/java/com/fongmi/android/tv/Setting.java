@@ -373,6 +373,14 @@ public class Setting {
         Prefers.put("display_mini_progress", display);
     }
 
+    public static boolean isDisplaySize() {
+        return Prefers.getBoolean("display_size", false);
+    } 
+
+    public static void putDisplaySize(boolean display) {
+        Prefers.put("display_size", display);
+    } 
+
     public static float getPlaySpeed() {
         return Prefers.getFloat("play_speed", 1.0f);
     }
