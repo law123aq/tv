@@ -100,6 +100,7 @@ public class ControlDialog extends BaseDialog implements ParseAdapter.OnClickLis
         binding.dpspeed.setActivated(Setting.isDisplaySpeed());
         binding.dpduration.setActivated(Setting.isDisplayDuration());
         binding.dpminiprogress.setActivated(Setting.isDisplayMiniProgress());
+        binding.dpsize.setActivated(Setting.isDisplaySize()); 
         setTrackVisible();
         setScaleText();
         setParse();
@@ -125,6 +126,7 @@ public class ControlDialog extends BaseDialog implements ParseAdapter.OnClickLis
         binding.dpspeed.setOnClickListener(v -> displaySpeed());
         binding.dpduration.setOnClickListener(v -> displayDuration());
         binding.dpminiprogress.setOnClickListener(v -> displayMiniProgress());
+        binding.dpsize.setOnClickListener(v -> displaySize()); 
     }
 
     private void displayTime() {
@@ -154,6 +156,14 @@ public class ControlDialog extends BaseDialog implements ParseAdapter.OnClickLis
         Setting.putDisplayMiniProgress(!display);
         binding.dpminiprogress.setActivated(!display);
     }
+
+    private void displaySize() {
+        boolean display = Setting.isDisplaySize();
+        parent.display.size.setVisibility(!display ? View.VISIBLE : View.GONE);
+        Setting.putDisplaySize(!display);
+        binding.dpsize.setActivated(!display);
+    }
+
 
     private void onTimer(View view) {
         App.post(() -> TimerDialog.create().show(activity), 200);
