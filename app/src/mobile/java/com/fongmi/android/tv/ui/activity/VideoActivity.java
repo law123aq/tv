@@ -936,10 +936,11 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isInPictureInPictureMode()) pictureMode = true;
         boolean controlVisible = isVisible(mBinding.control.getRoot());
         boolean visible = (!controlVisible || isLock()) && !pictureMode;
-        mBinding.display.time.setVisibility(Setting.isDisplayTime() && visible  ? View.VISIBLE : View.GONE);
-        mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && visible ? View.VISIBLE : View.GONE);
-        mBinding.display.duration.setVisibility(Setting.isDisplayDuration() && visible ? View.VISIBLE : View.GONE);
-        mBinding.display.progress.setVisibility(Setting.isDisplayMiniProgress() && visible ? View.VISIBLE : View.GONE);
+        mBinding.display.time.setVisibility(Setting.isDisplayTime() && visible && isFullscreen() && !isInPictureInPictureMode() ? View.VISIBLE : View.GONE);
+        mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && visible && isFullscreen() && !isInPictureInPictureMode() ? View.VISIBLE : View.GONE); 
+        mBinding.display.duration.setVisibility(Setting.isDisplayDuration() && visible && isFullscreen() && !isInPictureInPictureMode() ? View.VISIBLE : View.GONE);
+        mBinding.display.progress.setVisibility(Setting.isDisplayMiniProgress() && visible && isFullscreen() && !isInPictureInPictureMode() ? View.VISIBLE : View.GONE);
+        mBinding.display.size.setVisibility(Setting.isDisplaySize() && visible && isFullscreen() && !isInPictureInPictureMode() ? View.VISIBLE : View.GONE); 
     }
 
     private void onTimeChangeDisplaySpeed() {
@@ -949,6 +950,7 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
         if (Setting.isDisplaySpeed() && visible) Traffic.setSpeed(mBinding.display.netspeed);
         if (Setting.isDisplayDuration() && visible && position > 0) mBinding.display.duration.setText(mPlayers.getPositionTime(0) + "/" + mPlayers.getDurationTime());
         if (Setting.isDisplayMiniProgress() && visible && position > 0) mBinding.display.progress.setProgress((int)(position * 100 / mPlayers.getDuration()));
+        if (Setting.isDisplaySize() && visible) mBinding.display.size.setText(mPlayers.getSizeText()); 
         showDisplayInfo();
     }
 
