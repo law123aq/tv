@@ -6,7 +6,7 @@
    
     <TextView
         android:id="@+id/size"
-        android:padding="8dp"
+        android:padding="9dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/time"
-        android:padding="8dp"
+        android:padding="9dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -35,7 +35,7 @@
 
     <TextView
         android:id="@+id/duration"
-        android:padding="8dp"
+        android:padding="9dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -51,7 +51,7 @@
 
     <TextView
         android:id="@+id/netspeed"
-        android:padding="8dp"
+        android:padding="9dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
