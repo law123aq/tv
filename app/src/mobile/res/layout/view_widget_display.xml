@@ -17,12 +17,6 @@
         android:shadowDy="2"
         android:shadowRadius="1"
         android:textSize="12sp"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:scrollHorizontally="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:singleLine="true"
         tools:text="1920 x 1080"/>
 
     <TextView
