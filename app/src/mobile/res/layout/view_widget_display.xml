@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:textColor="@color/white"
+        android:progressBackgroundTint="@color/transparent"  
         android:shadowColor="@color/grey_900"
         android:shadowDx="2"
         android:shadowDy="2"
