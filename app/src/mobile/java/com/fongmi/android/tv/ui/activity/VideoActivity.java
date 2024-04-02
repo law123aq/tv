@@ -951,6 +951,9 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
         if (Setting.isDisplayDuration() && visible && position > 0) mBinding.display.duration.setText(mPlayers.getPositionTime(0) + "/" + mPlayers.getDurationTime());
         if (Setting.isDisplayMiniProgress() && visible && position > 0) mBinding.display.progress.setProgress((int)(position * 100 / mPlayers.getDuration()));
         if (Setting.isDisplaySize() && visible) mBinding.display.size.setText(mPlayers.getSizeText()); 
+        TextView size = findViewById(R.id.size);
+        Animation animation = AnimationUtils.loadAnimation(this, R.drawable.text_flash);
+        size.startAnimation(animation);
         showDisplayInfo();
     }
 
