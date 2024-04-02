@@ -951,12 +951,6 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
         if (Setting.isDisplayDuration() && visible && position > 0) mBinding.display.duration.setText(mPlayers.getPositionTime(0) + "/" + mPlayers.getDurationTime());
         if (Setting.isDisplayMiniProgress() && visible && position > 0) mBinding.display.progress.setProgress((int)(position * 100 / mPlayers.getDuration()));
         if (Setting.isDisplaySize() && visible) mBinding.display.size.setText(mPlayers.getSizeText()); 
-        TextView textView = findViewById(R.id.size);
-        ObjectAnimator animator = ObjectAnimator.ofFloat(textView, "translationY", 0, 10);
-        animator.setDuration(1000);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
-        animator.start();
         showDisplayInfo();
     }
 
