@@ -65,7 +65,7 @@
         android:shadowRadius="1"
         android:textColor="@color/white"
         android:textSize="16sp"
-        tools:text="10MB/S"/>
+        tools:text="10MB/S" />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -77,7 +77,6 @@
         android:layout_marginBottom="0dp"
         android:max="100"
         android:progress="0"
-        tools:progress="50" 
-        android:progressDrawable="@drawable/progress_style"/> 
+        tools:progress="50" /> 
 
 </RelativeLayout>
