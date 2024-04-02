@@ -17,8 +17,7 @@
         android:shadowDy="2"
         android:shadowRadius="1"
         android:textSize="12sp"
-        tools:text="1920 x 1080"
-        android:animation="@drawable/text_flash"/>
+        tools:text="1920 x 1080"/>
 
     <TextView
         android:id="@+id/time"
@@ -75,7 +74,6 @@
         android:layout_marginBottom="0dp"
         android:max="100"
         android:progress="0"
-        tools:progress="50" 
-        android:progressDrawable="@drawable/progress_style"/> 
+        tools:progress="50"/> 
 
 </RelativeLayout>
