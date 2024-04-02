@@ -70,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:progressDrawable="@color/white"
+        android:progressDrawable="@drawable/progress_style"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="0dp"
         android:max="100"
